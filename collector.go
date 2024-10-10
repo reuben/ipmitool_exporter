@@ -347,7 +347,7 @@ func splitSensorOutput(impitoolOutput string) ([]sensorData, error) {
 			} else if valueS != "na" && convErr == nil {
 				data.Value = float64(convValueS)
 			} else {
-				data.Value = math.NaN()
+				continue
 			}
 			data.Type = splittedL[2]
 			data.State = splittedL[3]

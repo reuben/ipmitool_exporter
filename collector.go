@@ -269,7 +269,7 @@ func ipmitoolConfig(config IPMIConfig) []string {
 		args = append(args, "-N", strconv.FormatInt(config.Timeout, 10))
 	}
 	if config.Retries != 0 {
-		args = append(args, "-R", strconv.FormatInt(config.Retries, 4))
+		args = append(args, "-R", strconv.FormatInt(config.Retries, 10))
 	}
 	return args
 }

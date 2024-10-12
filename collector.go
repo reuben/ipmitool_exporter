@@ -196,7 +196,7 @@ var (
 
 	powerStateDesc = prometheus.NewDesc(
 		prometheus.BuildFQName(namespace, "sensor_power", "state"),
-		"Reported state of a power sensor (1=ok, 0=critical).",
+		"Reported state of a power sensor (0=ok, 1=critical).",
 		[]string{"name"},
 		nil,
 	)

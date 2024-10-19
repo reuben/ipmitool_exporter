@@ -828,12 +828,12 @@ func collectLANInfo(ch chan<- prometheus.Metric, target ipmiTarget) (int, error)
 func collectBmcInfo(ch chan<- prometheus.Metric, target ipmiTarget) (int, error) {
 	output, err := ipmitoolOutput(target, "bmc")
 	if err != nil {
-		log.Debugf("Failed to collect ipmtool bmc data from %s: %s", targetName(target.host), err)
+		log.Debugf("Failed to collect ipmitool bmc data from %s: %s", targetName(target.host), err)
 		return 0, err
 	}
 	results, err := splitBmcOutput(output)
 	if err != nil {
-		log.Errorf("Failed to collect ipmtool bmc data from %s: %s", targetName(target.host), err)
+		log.Errorf("Failed to collect ipmitool bmc data from %s: %s", targetName(target.host), err)
 		return 0, err
 	}
 
@@ -851,12 +851,12 @@ func collectBmcInfo(ch chan<- prometheus.Metric, target ipmiTarget) (int, error)
 func collectDcmiPowerInfo(ch chan<- prometheus.Metric, target ipmiTarget) (int, error) {
 	output, err := ipmitoolOutput(target, "dcmi-power")
 	if err != nil {
-		log.Debugf("Failed to collect ipmtool dcmi power data from %s: %s", targetName(target.host), err)
+		log.Debugf("Failed to collect ipmitool dcmi power data from %s: %s", targetName(target.host), err)
 		return 0, err
 	}
 	results, err := splitDcmiPowerOutput(output)
 	if err != nil {
-		log.Errorf("Failed to collect ipmtool dcmi power data from %s: %s", targetName(target.host), err)
+		log.Errorf("Failed to collect ipmitool dcmi power data from %s: %s", targetName(target.host), err)
 		return 0, err
 	}
 
@@ -875,12 +875,12 @@ func collectFwumInfo(ch chan<- prometheus.Metric, target ipmiTarget) (int, error
 	output, _ := ipmitoolOutput(target, "fwum")
 	// Then fwum collector will work without exit code 1 -- uncomment this error check:
 	// if err != nil {
-	// 	log.Debugf("Failed to collect ipmtool fwum data from %s: %s", targetName(target.host), err)
+	// 	log.Debugf("Failed to collect ipmitool fwum data from %s: %s", targetName(target.host), err)
 	// 	return 0, err
 	// }
 	results, err := splitFwumOutput(output)
 	if err != nil {
-		log.Errorf("Failed to collect ipmtool fwum data from %s: %s", targetName(target.host), err)
+		log.Errorf("Failed to collect ipmitool fwum data from %s: %s", targetName(target.host), err)
 		return 0, err
 	}
 
@@ -906,12 +906,12 @@ func collectFwumInfo(ch chan<- prometheus.Metric, target ipmiTarget) (int, error
 func collectPowerState(ch chan<- prometheus.Metric, target ipmiTarget) (int, error) {
 	output, err := ipmitoolOutput(target, "power")
 	if err != nil {
-		log.Debugf("Failed to collect ipmtool power data from %s: %s", targetName(target.host), err)
+		log.Debugf("Failed to collect ipmitool power data from %s: %s", targetName(target.host), err)
 		return 0, err
 	}
 	result, err := getChassisPowerState(target, output)
 	if err != nil {
-		log.Errorf("Failed to parse ipmtool power data from %s: %s", targetName(target.host), err)
+		log.Errorf("Failed to parse ipmitool power data from %s: %s", targetName(target.host), err)
 		return 0, err
 	}
 	ch <- prometheus.MustNewConstMetric(

@@ -909,7 +909,7 @@ func collectPowerState(ch chan<- prometheus.Metric, target ipmiTarget) (int, err
 		log.Debugf("Failed to collect ipmitool power data from %s: %s", targetName(target.host), err)
 		return 0, err
 	}
-	result, err := getChassisPowerState(target, output)
+	result, err := getChassisPowerState(output)
 	if err != nil {
 		log.Errorf("Failed to parse ipmitool power data from %s: %s", targetName(target.host), err)
 		return 0, err

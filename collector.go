@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"math"
+	"fmt"
 	"os/exec"
 	"regexp"
 	"strconv"
@@ -326,7 +327,7 @@ func ipmitoolOutput(target ipmiTarget, command string) (string, error) {
 	return outBuf.String(), err
 }
 
-func splitSensorOutput(impitoolOutput string) ([]sensorData, error) {
+func splitSensorOutput(target ipmiTarget, impitoolOutput string) ([]sensorData, error) {
 	var result []sensorData
 
 	scanner := bufio.NewScanner(strings.NewReader(impitoolOutput))
@@ -340,7 +341,7 @@ func splitSensorOutput(impitoolOutput string) ([]sensorData, error) {
 			trimmedL := strings.ReplaceAll(line, " ", "")
 			splittedL := strings.Split(trimmedL, "|")
 			if len(splittedL) < 4 {
-				log.Errorf("Failed to | split the following line: '%s'", line)
+				log.Errorf("Host '%s' - Failed to | split the following line: '%s'", targetName(target.host), line)
 				continue
 			}
 			data.Name = splittedL[0]
@@ -650,11 +651,14 @@ func getChassisPowerState(ipmitoolOutput string) (int, error) {
 
 	for scanner.Scan() {
 		line := scanner.Text()
-		if len(line) > 0 {
+		if len(line) > 1 {
 			value := ipmiCurrentPowerRegex.FindStringSubmatch(line)[1]
 			if value == "on" {
 				return 1, err
 			}
+		} else {
+			err = fmt.Errorf("Unable to derive power state from line: '%s'", line)
+			return 0, err
 		}
 	}
 	return 0, err
@@ -711,7 +715,7 @@ func collectSensorMonitoring(ch chan<- prometheus.Metric, target ipmiTarget) (in
 		log.Errorf("Failed to collect ipmitool sensor data from %s: %s", targetName(target.host), err)
 		return 0, err
 	}
-	results, err := splitSensorOutput(output)
+	results, err := splitSensorOutput(target, output)
 	if err != nil {
 		log.Errorf("Failed to parse ipmitool sensor data from %s: %s", targetName(target.host), err)
 		return 0, err
@@ -737,7 +741,7 @@ func collectSensorMonitoring(ch chan<- prometheus.Metric, target ipmiTarget) (in
 		case "na":
 			state = math.NaN()
 		default:
-			log.Errorf("Unknown sensor state: '%s'\n", data.State)
+			log.Warnf("Unknown sensor state: '%s'\n", data.State)
 			state = math.NaN()
 		}
 
@@ -905,9 +909,9 @@ func collectPowerState(ch chan<- prometheus.Metric, target ipmiTarget) (int, err
 		log.Debugf("Failed to collect ipmtool power data from %s: %s", targetName(target.host), err)
 		return 0, err
 	}
-	result, err := getChassisPowerState(output)
+	result, err := getChassisPowerState(target, output)
 	if err != nil {
-		log.Errorf("Failed to collect ipmtool power data from %s: %s", targetName(target.host), err)
+		log.Errorf("Failed to parse ipmtool power data from %s: %s", targetName(target.host), err)
 		return 0, err
 	}
 	ch <- prometheus.MustNewConstMetric(

@@ -339,6 +339,10 @@ func splitSensorOutput(impitoolOutput string) ([]sensorData, error) {
 		if len(line) > 0 {
 			trimmedL := strings.ReplaceAll(line, " ", "")
 			splittedL := strings.Split(trimmedL, "|")
+			if len(splittedL) != 2 {
+				log.Errorf("Failed to | split the following line: '%s'", line)
+				continue
+			}
 			data.Name = splittedL[0]
 			valueS := splittedL[1]
 			convValueS, convErr := strconv.ParseUint(valueS, 0, 64)

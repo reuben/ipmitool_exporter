@@ -301,8 +301,10 @@ func ipmitoolOutput(target ipmiTarget, command string) (string, error) {
 	cmdConfig = append(cmdConfig, cmdCommand...)
 
 	var cmd *exec.Cmd
-	if config.Timeout != 0 {
-		cmd = exec.Command("/usr/bin/timeout", strconv.FormatInt(config.Timeout, 10), "/usr/sbin/ipmitool", cmdConfig...)
+	if target.config.Timeout != 0 {
+    		newCommands := []string{strconv.FormatInt(target.config.Timeout, 10), "/usr/sbin/ipmitool"}
+		cmdConfig = append(newCommands, cmdConfig...)
+		cmd = exec.Command("/usr/bin/timeout", cmdConfig...)
 	} else {
 		cmd = exec.Command("ipmitool", cmdConfig...)
 	}

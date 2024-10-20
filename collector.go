@@ -266,9 +266,6 @@ func ipmitoolConfig(config IPMIConfig) []string {
 	if config.Password != "" {
 		args = append(args, "-P", config.Password)
 	}
-	if config.Timeout != 0 {
-		args = append(args, "-N", strconv.FormatInt(config.Timeout, 10))
-	}
 	if config.Retries != 0 {
 		args = append(args, "-R", strconv.FormatInt(config.Retries, 10))
 	}
@@ -303,7 +300,12 @@ func ipmitoolOutput(target ipmiTarget, command string) (string, error) {
 	}
 	cmdConfig = append(cmdConfig, cmdCommand...)
 
-	cmd := exec.Command("ipmitool", cmdConfig...)
+	var cmd *exec.Cmd
+	if config.Timeout != 0 {
+		cmd = exec.Command("/usr/bin/timeout", strconv.FormatInt(config.Timeout, 10), "/usr/sbin/ipmitool", cmdConfig...)
+	} else {
+		cmd = exec.Command("ipmitool", cmdConfig...)
+	}
 	var outBuf bytes.Buffer
 	cmd.Stdout = &outBuf
 	cmd.Stderr = &outBuf

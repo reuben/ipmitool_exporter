@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"math"
 	"fmt"
+	"context"
 	"os/exec"
 	"regexp"
 	"strconv"
@@ -302,7 +303,7 @@ func ipmitoolOutput(target ipmiTarget, command string) (string, error) {
 
 	var cmd *exec.Cmd
 	if target.config.Timeout != 0 {
-		ctx, cancel := context.WithTimeout(context.Background(), target.config.Timeout * time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(target.config.Timeout) * time.Second)
 		defer cancel()
 		cmd = exec.CommandContext(ctx, "ipmitool", cmdConfig...)
 	} else {

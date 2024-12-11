@@ -6,6 +6,10 @@ on:
   release:
     types: [published]
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   build_push_image:
     name: Build & Push Docker
@@ -15,23 +19,24 @@ jobs:
       contents: read
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v2
-      
+        uses: actions/checkout@v4
+
       - name: Log in to quay.io through Robot account
-        uses: docker/login-action@v3.3.0
+        uses: docker/login-action@v3
         with:
-          username: ${{ secrets.QUAY_ROBOT_USER }}
-          password: ${{ secrets.QUAY_ROBOT_PASSWORD }}
-      
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@v5.5.1
+        uses: docker/metadata-action@v5
         with:
           images: |
-            ${{ secrets.QUAY_ROBOT_USER }}/ipmi-exporter
-      
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
       - name: Build and push Docker images
-        uses: docker/build-push-action@v6.9.0
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: true
